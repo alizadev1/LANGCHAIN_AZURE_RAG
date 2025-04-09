@@ -1,1 +1,3 @@
-# LANGCHAIN_AZURE_RAG
+# development
+
+python main.py

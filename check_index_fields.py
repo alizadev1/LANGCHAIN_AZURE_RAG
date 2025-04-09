@@ -3,10 +3,8 @@ from dotenv import load_dotenv
 from azure.search.documents.indexes import SearchIndexClient
 from azure.core.credentials import AzureKeyCredential
 
-# Load environment variables
 load_dotenv()
 
-# Get credentials from .env
 endpoint = os.getenv("AZURE_SEARCH_ENDPOINT")
 key = os.getenv("AZURE_SEARCH_KEY")
 index_name = os.getenv("AZURE_SEARCH_INDEX_NAME")
