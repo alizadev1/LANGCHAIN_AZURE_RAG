@@ -7,6 +7,7 @@ from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
 from langchain.chains import RetrievalQA
 from langchain_community.vectorstores.azuresearch import AzureSearch
 from langchain_community.retrievers import AzureAISearchRetriever
+from langchain.prompts import PromptTemplate
 
 load_dotenv()
 
@@ -92,14 +93,32 @@ query = input("\nAsk your question: ")
 
 docs = retriever.invoke(query)
 
+STRICT_CONTEXT_PROMPT = PromptTemplate.from_template(
+     """You are a helpful assistant answering user questions **only using the provided context below**.
+Do not rely on outside knowledge or make assumptions. If the context does not include an answer, do not fabricate one.
+
+<context>
+{context}
+</context>
+
+Question: {question}
+Answer:"""
+)
+
+
 if not docs:
     print("Answer: No relevant documents found for your question.")
 else:
     qa = RetrievalQA.from_chain_type(
-        llm=chat_llm,
-        retriever=retriever,
-        return_source_documents=True
-    )
+    llm=chat_llm,
+    retriever=retriever,
+    chain_type="stuff",
+    return_source_documents=True,
+    chain_type_kwargs={
+        "prompt": STRICT_CONTEXT_PROMPT
+            }
+        )
+
 
     result = qa.invoke(query)
 
@@ -107,3 +126,4 @@ else:
     print("\nSources:")
     for doc in result["source_documents"]:
         print("-", doc.metadata.get("page_id", "unknown"))
+what
